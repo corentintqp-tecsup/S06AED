@@ -28,17 +28,26 @@ public class UIGameManager : MonoBehaviour
 
     private void OnElementRemoved(Window window)
     {
+        print("Element removed");
         window.window.SetActive(false);
         window.window.transform.SetAsFirstSibling();
     }
 
     private void HideCurrentPanel(InputAction.CallbackContext context)
     {
-        Window window = manager.Pop();
-        if (window.window.activeSelf)
-            window.window.SetActive(false);
-        else
+        if (manager.Count == 0)
+            return;
+        Window window = manager.Peek();
+        if (!window.window.activeInHierarchy)
+        {
+            manager.Pop();
             HideCurrentPanel(context);
+        }
+        else
+        {
+            manager.Pop();
+            return;
+        }
     }
 
     public void BtnOpenPanel(GameObject panel)

@@ -16,7 +16,9 @@ public class WindowsManager : MyStack<Window>
     {
         Window temp = base.Pop();
         if (temp.window.activeSelf)
+        {
             onElementRemoved?.Invoke(temp);
+        }
         return temp;
     }
 
