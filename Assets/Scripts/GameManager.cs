@@ -1,45 +1,58 @@
 using UnityEngine;
 using Sirenix.OdinInspector;
+using TMPro;
 
 public class GameManager : MonoBehaviour
 {
-    public static GameManager instance;
-    public MyStack<string> nameStack = new();
+    public PriorityQueue<EntityStats> priorityQueue =
+        new((a, b) => a.speed > b.speed);
 
-    private void Awake()
-    {
-        if (instance == null)
-            instance = this;
-        else
-            Destroy(gameObject);
-        DontDestroyOnLoad(this);
-    }
+    public TextMeshProUGUI queueText;
+    private string text;
 
-    // [Button]
-    public void PushToStack(string value)
+    [Button]
+    public void Enqueue(EntityStats stats)
     {
-        nameStack.Push(value);
-    }
-
-    // [Button]
-    public void PopFromStack()
-    {
-        Debug.Log(nameStack.Pop());
-    }
-
-    // [Button]
-    public void PeekStack()
-    {
-        Debug.Log(nameStack.Peek());
+        priorityQueue.Enqueue(stats);
+        DisplayQueue();
     }
 
     [Button]
-    public void ClearStack()
+    public void Dequeue()
     {
-        nameStack.Clear();
-        Debug.Log("Stack cleared");
+        Debug.Log("Dequeue: " + priorityQueue.Dequeue().entityName);
+        DisplayQueue();
     }
 
     [Button]
-    public void Count() => Debug.Log($"Stack count: {nameStack.Count}");
+    public void Peek()
+    {
+        Debug.Log("Peek: " + priorityQueue.Peek().entityName);
+    }
+
+    [Button]
+    public void Clear()
+    {
+        Debug.Log("Queue Cleared");
+        priorityQueue.Clear();
+    }
+
+    [Button]
+    public void Count()
+    {
+        Debug.Log("Count: " + priorityQueue.Count);
+    }
+
+    public void DisplayQueue()
+    {
+        text = "";
+        QueueNode<EntityStats> temp = priorityQueue.Head;
+        while (temp != null)
+        {
+            text += temp.Value.entityName + " - " + temp.Value.speed + "\n";
+            temp = temp.Next;
+        }
+        queueText.text = text;
+    }
+
 }
